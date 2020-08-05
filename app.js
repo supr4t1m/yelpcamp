@@ -24,7 +24,7 @@ var campgroundsRoutes = require("./routes/campgrounds"),
 	// 	{name:"Mountain goat's rest", image:'https://th.bing.com/th/id/OIP.ifjgRwGw_0cKbBU5im0bXQHaEK?w=316&h=180&c=7&o=5&dpr=1.25&pid=1.7'}
 	// ]
 
-mongoose.connect("mongodb+srv://the_nerd:pass@cluster0.oebvw.mongodb.net/yelp_camp_deployed?retryWrites=true&w=majority", {
+mongoose.connect("mongodb+srv://the_nerd:"+process.env.MONGO_PASS+"@cluster0.oebvw.mongodb.net/yelpcamp_deployed?retryWrites=true&w=majority", {
 	useNewUrlParser: true,
 	useUnifiedTopology: true,
 	useFindAndModify: false
