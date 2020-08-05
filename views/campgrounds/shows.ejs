@@ -1,0 +1,74 @@
+<%- include('../partials/header'); %>
+
+<div class="container">
+	<div class="row">
+		<div class="col-md-3">
+			<p class="lead">Yelpcamp</p>
+			<div class="list-group">
+				<li class="list-group-item active">Item 1</li>
+				<li class="list-group-item">Item 2</li>
+				<li class="list-group-item">Item 3</li>
+			</div>
+		<div id="map" style="width: 100%; height: 400px;"></div>
+		</div>
+		<div class="col-md-9">
+			<div class="thumbnail" id="big-pic">
+				<img src="<%= campground.image %>" alt="" class="img-responsive">
+				<div class="caption-full">
+					<h4 class="pull-right">$<%= campground.price %>/night</h4>
+					<h4><a href=""><%= campground.name %></a></h4>
+					<p><%= campground.description %></p>
+					<p class="text-right">
+						<em>Posted by <%= campground.author.username %></em>
+					</p>
+					<% if(currentUser && campground.author.id.equals(currentUser._id)) { %>
+						<a href="/campgrounds/<%= campground._id %>/edit" class="btn btn-warning">Edit</a>
+						<form id="delete-form" action="/campgrounds/<%= campground._id %>?_method=DELETE" method="POST">
+							<button class="btn btn-danger">Delete</button>
+						</form>
+					<% } %>
+					<a href="/campgrounds" class="btn btn-info">Go back</a>
+				</div>
+			</div>
+			<div class="well">
+				<div class="text-right">
+					<a href="/campgrounds/<%= campground._id %>/comments/new" class="btn btn-success">
+						Add New Comment
+					</a>
+				</div>
+				<hr>
+				<% campground.comments.forEach(function(comment) { %>
+				<div class="row">
+					<div class="col-md-12">
+						<strong><%= comment.author.username %></strong>
+						<span class="pull-right">10 days ago</span>
+						<p><%= comment.text %></p>
+						<% if(currentUser && comment.author.id.equals(currentUser._id)) { %>
+							<a href="/campgrounds/<%=campground._id%>/comments/<%=comment._id%>/edit" class="btn btn-xs btn-warning">Edit</a>
+							<form id="comment-delete-form" action="/campgrounds/<%=campground._id%>/comments/<%=comment._id%>?_method=DELETE" method="POST">
+								<input class="btn btn-xs btn-danger" type="submit" value="Delete">
+							</form>
+						<% } %>
+					</div>
+				</div>
+				<% }); %>				
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+	mapboxgl.accessToken = 'pk.eyJ1IjoidGhleHhuZXJkIiwiYSI6ImNrZGJueWh1NTB0ejYzNm1oMTR0NWl2cW4ifQ.pNnK1I39QrX_el4ZwN02wA';
+	var map = new mapboxgl.Map({
+	container: 'map',
+	style: 'mapbox://styles/mapbox/streets-v11',
+	center: [<%= center %>], // starting position [lng, lat]
+	zoom: 9 // starting zoom
+});
+	var marker = new mapboxgl.Marker()
+	.setPopup(new mapboxgl.Popup({offset: 25}))
+	.setLngLat([<%= center %>])
+	.addTo(map);
+
+</script>
+<%- include("../partials/footer"); %>

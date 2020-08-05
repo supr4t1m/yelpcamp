@@ -1,0 +1,17 @@
+.thumbnail img {
+	width: 100%;
+}
+
+#big-pic {
+	padding: 0px;
+}
+
+.caption-full {
+	padding: 9px;
+}
+#delete-form {
+	display: inline;
+}
+#comment-delete-form {
+	display: inline;
+}
