@@ -34,6 +34,9 @@
 			<div class="alert alert-danger" role="alert"><%= error %></div>
 		<% } %>
 			<% if(success && success.length>0) { %>
+				<% if(currentUser) { %>
+					<% success += " " + currentUser.username; %>
+				<% } %>
 				<div class="alert alert-success" role="alert"><%= success %></div>
 			<% } %>
 		</div>
