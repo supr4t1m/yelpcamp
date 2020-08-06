@@ -20,9 +20,9 @@ var campgroundsRoutes = require("./routes/campgrounds"),
 	indexRoutes		  = require("./routes/index");
 	
 mongoose.connect(process.env.DB_URL, {
-	newUrlParser: true,
+	useNewUrlParser: true,
 	useUnifiedTopology: true,
-	useFindAndModify: true
+	useFindAndModify: false
 })
 .then(()=>console.log("connected to DB"))
 .catch((err)=>console.log(err));
