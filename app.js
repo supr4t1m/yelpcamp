@@ -11,7 +11,11 @@ var express 		= require('express'),
 	Campground 		= require("./models/campgrounds"),
 	Comment 		= require("./models/comments"),
 	User 			= require("./models/user"),
-	seedDB			= require("./seeds");
+	seedDB			= require("./seeds"),
+	moment			= require("moment");
+
+// store moment in locals
+app.locals.moment = require("moment");
 
 // requiring route modules
 
@@ -64,10 +68,14 @@ app.use(flash());
 
 app.use(function(req, res, next) {
 	res.locals.currentUser = req.user;
+	// once you retrieve req.flash("type") flash message becomes empty
 	res.locals.error = req.flash("error");
 	res.locals.success = req.flash("success");
+	// req.flash("success") or req.flash("error") will return empty array here
 	next();
 });
+
+// moment 
 
 app.use("/campgrounds", campgroundsRoutes);
 app.use("/campgrounds/:id/comments", commentsRoutes);
@@ -75,4 +83,5 @@ app.use(indexRoutes);
 
 app.listen(process.env.PORT||3000, process.env.IP, function() {
 	console.log('The Yelpcamp server has started');
+	console.log(moment().utcOffset("+05:30").format());
 });
