@@ -19,7 +19,7 @@
 					<h4><a href=""><%= campground.name %></a></h4>
 					<p><%= campground.description %></p>
 					<p class="text-right">
-						<em>Posted by <%= campground.author.username %>, <%= moment(campground.createdAt).utcOffset("+05:30").format("MMMM Do YYYY") %></em>
+						<em>Posted by <a href="/users/<%= campground.author.id %>"><%= campground.author.username %></a>, <%= moment(campground.createdAt).utcOffset("+05:30").format("MMMM Do YYYY") %></em>
 					</p>
 					<% if(currentUser && campground.author.id.equals(currentUser._id)) { %>
 						<a href="/campgrounds/<%= campground._id %>/edit" class="btn btn-warning">Edit</a>
