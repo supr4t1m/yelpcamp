@@ -60,6 +60,9 @@ router.get("/:id/changePassword", middleware.checkProfileOwnership, function(req
 });
 
 // PUT /users/:id/changePassword
+
+// user.changePassword is an asynchronous function, so any error thrown in it has be passed to 
+// next, i.e., next(err) so that express can handle it.
 router.put("/:id/changePassword", middleware.checkProfileOwnership, function(req, res, next) {
 	User.findById(req.params.id, function(err, user) {
 		if (err) 
@@ -69,7 +72,7 @@ router.put("/:id/changePassword", middleware.checkProfileOwnership, function(req
 			user.changePassword(req.body.oldPassword, req.body.newPassword, function(err, result) {
 				if (err) {
 					req.flash("error", err.message);
-					res.redirect("/campgrounds");
+					res.render("users/change");
 					next(err);
 				} else {
 					req.flash("success", "Successfully changed password for");
@@ -78,7 +81,7 @@ router.put("/:id/changePassword", middleware.checkProfileOwnership, function(req
 			});
 		} else {
 			req.flash("error", "Passwords do not match");
-			res.redirect("/campgrounds");
+			res.render("users/change");
 		}
 	});
 });
