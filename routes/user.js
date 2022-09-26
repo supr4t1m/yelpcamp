@@ -1,0 +1,86 @@
+var express = require("express"),
+	router  = express.Router(),
+	User	= require("../models/user"),
+	Campground = require("../models/campgrounds"),
+	middleware = require("../middleware");
+	
+
+// USER PROFILE
+
+// GET /users/:id
+router.get("/:id", function(req, res) {
+	User.findById(req.params.id, function(err, user) {
+		const backUrl = req.headers.referer || "/campgrounds";
+		
+		if (err) {
+			req.flash("error", "error finding user");
+			return res.redirect(backUrl);
+		}
+		
+		if (!user) {
+			req.flash("error", "user doesn't exist");
+			return res.redirect(backUrl);
+		}
+		
+		// we have built up the query before executing, this way we don't have to pass json objects as query
+		
+		// .id is a virtual getter function to return string of ._id, set default by mongoose
+		Campground.find().where("author.id").equals(user.id).exec(function(err, campgrounds) {
+			// campgrounds object is passed without a key, the key will automatically be named campgrounds with values as contents of campgrounds object
+			// same with user
+			if (err) {
+				req.flash("error", "unable to find campgrounds with current user, something went wrong.");
+				return res.redirect(backUrl);
+			}
+			
+			res.render("users/shows", {user, campgrounds});
+		});
+	});
+});
+
+// GET /users/:id/edit 
+router.get("/:id/edit", middleware.checkProfileOwnership, function(req, res) {
+	res.render("users/edit", {user: req.user});
+});
+
+// UPDATE /users/:id
+router.put("/:id", middleware.checkProfileOwnership, function(req, res) {
+	User.findByIdAndUpdate(req.params.id, req.body.user, function(err, user) {
+		if (err) {
+			res.redirect("/campgrounds");
+		} else {
+			res.redirect("/users/"+req.params.id);
+		}
+	});
+});
+
+// GET /users/:id/changePassword
+router.get("/:id/changePassword", middleware.checkProfileOwnership, function(req, res) {
+	res.render("users/change");
+});
+
+// PUT /users/:id/changePassword
+router.put("/:id/changePassword", middleware.checkProfileOwnership, function(req, res, next) {
+	User.findById(req.params.id, function(err, user) {
+		if (err) 
+			res.redirect("/campgrounds");
+		
+		if (req.body.newPassword === req.body.confirm) {
+			user.changePassword(req.body.oldPassword, req.body.newPassword, function(err, result) {
+				if (err) {
+					req.flash("error", err.message);
+					res.redirect("/campgrounds");
+					next(err);
+				} else {
+					req.flash("success", "Successfully changed password for");
+					res.redirect("/campgrounds");
+				}
+			});
+		} else {
+			req.flash("error", "Passwords do not match");
+			res.redirect("/campgrounds");
+		}
+	});
+});
+
+module.exports = router;

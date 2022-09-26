@@ -21,8 +21,9 @@ app.locals.moment = require("moment");
 
 var campgroundsRoutes = require("./routes/campgrounds"),
 	commentsRoutes	  = require("./routes/comments"),
-	indexRoutes		  = require("./routes/index");
-	
+	indexRoutes		  = require("./routes/index"),
+	userRoutes		  = require("./routes/user");
+
 mongoose.connect(process.env.DB_URL, {
 	useNewUrlParser: true,
 	useUnifiedTopology: true,
@@ -80,6 +81,7 @@ app.use(function(req, res, next) {
 app.use("/campgrounds", campgroundsRoutes);
 app.use("/campgrounds/:id/comments", commentsRoutes);
 app.use(indexRoutes);
+app.use("/users", userRoutes);
 
 app.listen(process.env.PORT||3000, process.env.IP, function() {
 	console.log('The Yelpcamp server has started');
