@@ -10,16 +10,15 @@ var express = require("express"),
 // GET /users/:id
 router.get("/:id", function(req, res) {
 	User.findById(req.params.id, function(err, user) {
-		const backUrl = req.headers.referer || "/campgrounds";
 		
 		if (err) {
 			req.flash("error", "error finding user");
-			return res.redirect(backUrl);
+			return res.redirect("back");
 		}
 		
 		if (!user) {
 			req.flash("error", "user doesn't exist");
-			return res.redirect(backUrl);
+			return res.redirect("back");
 		}
 		
 		// we have built up the query before executing, this way we don't have to pass json objects as query
@@ -30,7 +29,7 @@ router.get("/:id", function(req, res) {
 			// same with user
 			if (err) {
 				req.flash("error", "unable to find campgrounds with current user, something went wrong.");
-				return res.redirect(backUrl);
+				return res.redirect("back");
 			}
 			
 			res.render("users/shows", {user, campgrounds});
@@ -65,15 +64,17 @@ router.get("/:id/changePassword", middleware.checkProfileOwnership, function(req
 // next, i.e., next(err) so that express can handle it.
 router.put("/:id/changePassword", middleware.checkProfileOwnership, function(req, res, next) {
 	User.findById(req.params.id, function(err, user) {
-		if (err) 
-			res.redirect("/campgrounds");
+		if (err) {
+			req.flash("error", "something went wrong");
+			return res.redirect("/campgrounds");
+		}
 		
 		if (req.body.newPassword === req.body.confirm) {
 			user.changePassword(req.body.oldPassword, req.body.newPassword, function(err, result) {
 				if (err) {
 					req.flash("error", err.message);
-					res.render("users/change");
-					next(err);
+					res.redirect("back");
+					return next(err);
 				} else {
 					req.flash("success", "Successfully changed password for");
 					res.redirect("/campgrounds");
@@ -81,7 +82,8 @@ router.put("/:id/changePassword", middleware.checkProfileOwnership, function(req
 			});
 		} else {
 			req.flash("error", "Passwords do not match");
-			res.render("users/change");
+			// res.render("users/change");
+			return res.redirect("back");
 		}
 	});
 });
